@@ -13,10 +13,9 @@ public:
     // defining shorthands for the used types
     typedef Model                                   base_type;
     typedef StructureType                           structure_type_type;
-    typedef structure_type_type::identifier_type    structure_id_type;
-    // TODO change to structure_type_id_type
+    typedef structure_type_id_type::identifier_type structure_type_id_type;
 
-    typedef std::map<structure_id_type, boost::shared_ptr<structure_type_type> > structure_type_map_type;
+    typedef std::map<structure_type_id_type, boost::shared_ptr<structure_type_type> > structure_type_map_type;
 
     typedef select_second<structure_type_map_type::value_type> structure_second_selector_type;
 
@@ -32,17 +31,22 @@ public:
     virtual ~ParticleModel();
 
     // Gets a structure type
-    boost::shared_ptr<structure_type_type> get_structure_type_by_id(structure_id_type const& id) const;
+    boost::shared_ptr<structure_type_type> get_structure_type_by_id(structure_type_id_type const& id) const;
 
     // Add a structure type
-    void add_structure_type(boost::shared_ptr<structure_type_type> const& structure);
+    void add_structure_type(boost::shared_ptr<structure_type_type> const& structure_type);
 
     // Get all structure types in the model
     structure_type_range get_structure_types() const;
 
+    // Gets and sets the default structure_type
+    void set_def_structure_type(boost::shared_ptr<structure_type_id_type> const& id);
+    boost::shared_ptr<structure_type_id_type> get_def_structure_type();
+
 /////// Member variables
 public:
-    structure_type_map_type structure_type_map_;    // mapping: structure_type_id -> structure_type
+    structure_type_map_type structure_type_map_;        // mapping: structure_type_id -> structure_type
+    structure_type_id_type  default_structure_type_;    // The id of the default structure_type ("world")
 };
 
 
