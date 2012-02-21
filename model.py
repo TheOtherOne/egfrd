@@ -109,7 +109,7 @@ Arguments:
 
 # Species is just a function, not a class. It seems to be a frontend to the
 # constructor of _gfrd.SpeciesType
-def Species(name, D, radius=0, structure="world", drift=0):
+def Species(name, D, radius=0, structure=None, drift=0):
     """Define a new Species (in/on a specific Region or Surface).
 
     Arguments:
@@ -164,7 +164,7 @@ class ParticleModel(_gfrd.ParticleModel):
         """
         _gfrd.ParticleModel.__init__(self)
         self.world_size = world_size
-        self.structures = {}
+#        self.structures = {}
 
         # Particles of a Species whose Surface is not specified will be 
         # added to the "world". Dimensions don't matter, except for 
@@ -172,28 +172,30 @@ class ParticleModel(_gfrd.ParticleModel):
         structure_type = _gfrd.StructureType()
         structure_type['name'] = 'world'
         _gfrd.ParticleModel.add_structure_type(self, structure_type)
+        _gfrd.ParticleModel.set_def_structure_type(self, structure_type.id)
         
-        x = numpy.repeat(world_size / 2, 3)
-        region = _gfrd.CuboidalRegion('world', _gfrd.Box(x, x))
-        region.sid = structure_type.id
-        
-        self.add_structure(region)
+#        x = numpy.repeat(world_size / 2, 3)
+#        region = _gfrd.CuboidalRegion('world', _gfrd.Box(x, x))
+#        region.sid = structure_type.id
+#        
+#        self.add_structure(region)
 
-    def add_structure(self, structure):
-        """Add a Structure (Region or Surface) to the ParticleModel.
-
-        Arguments:
-            - structure
-              a Region or Surface created with one of the functions
-              model.create_<>_region or model.create_<>_surface.
-
-        """
-        assert isinstance(structure, _gfrd.Structure)
-        self.structures[structure.id] = structure
-        return structure
-
-    def get_structure(self, id): 
-        return self.structures[id]
+### TODO change to add_structure_type
+#    def add_structure(self, structure):
+#        """Add a Structure (Region or Surface) to the ParticleModel.
+#
+#        Arguments:
+#            - structure
+#              a Region or Surface created with one of the functions
+#              model.create_<>_region or model.create_<>_surface.
+#
+#        """
+#        assert isinstance(structure, _gfrd.Structure)
+#        self.structures[structure.id] = structure
+#        return structure
+#
+#    def get_structure(self, id): 
+#        return self.structures[id]
 
     def add_reaction_rule(self, reaction_rule):
         """Add a ReactionRule to the ParticleModel.
