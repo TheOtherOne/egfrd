@@ -109,7 +109,7 @@ Arguments:
 
 # Species is just a function, not a class. It seems to be a frontend to the
 # constructor of _gfrd.SpeciesType
-def Species(name, D, radius=0, structure=None, drift=0):
+def Species(name, D, radius=0, structure_type=None, drift=0):
     """Define a new Species (in/on a specific Region or Surface).
 
     Arguments:
@@ -121,7 +121,7 @@ def Species(name, D, radius=0, structure=None, drift=0):
         - radius
             the radius for this Species in/on this Region or Surface. 
             Units: meters.
-        - structure
+        - structure_type
             the Region or Surface in/on which this Species can exist.  
             Optional. If you do not specify a Structure the Species is 
             added to the "world".
@@ -141,7 +141,7 @@ def Species(name, D, radius=0, structure=None, drift=0):
     st["D"] = str(D)
     st["v"] = str(drift)
     st["radius"] = str(radius)
-    st["structure"] = structure
+    st["structure"] = structure_type
     return st
 
 
