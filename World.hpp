@@ -50,7 +50,7 @@ struct WorldTraitsBase
                      structure_id_type>                     particle_type;      // type for particles, NOTE why is there no v_type here?
 
     typedef SpeciesInfo<species_id_type, D_type,
-                        length_type, structure_type_id_type>    species_type;  // This is the definition of a species in the presence of a world.
+                        length_type, structure_type_id_type>    species_type;  // This is ADDITIONAL species information for use in a (spatial) world.
     typedef Vector3<length_type>                                point_type;
     typedef typename particle_type::shape_type::position_type   position_type;
     typedef GSLRandomNumberGenerator                            rng_type;
