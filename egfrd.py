@@ -73,7 +73,7 @@ def create_default_single(domain_id, shell_id, pid_particle_pair, structure, rea
         testSingle = CylindricalSurfaceSingletestShell(pid_particle_pair, structure, geometrycontainer, domains)
         return CylindricalSurfaceSingle (domain_id, shell_id, testSingle, reaction_rules)
 
-### Interactions (including changes from one surface to another / crossing edges)
+### Interactions
 def try_default_testinteraction(single, surface, geometrycontainer, domains):
     if isinstance(single.structure, CuboidalRegion):
         if isinstance(surface, PlanarSurface):
@@ -83,7 +83,7 @@ def try_default_testinteraction(single, surface, geometrycontainer, domains):
         else:
             raise testShellError('(Interaction). Combination of (3D particle, surface) is not supported')
     elif isinstance(single.structure, PlanarSurface):
-            raise testShellError('(Interaction). Combination of (2D particle, surface) is not supported')
+        raise testShellError('(Interaction). Combination of (2D particle, surface) is not supported')
     elif isinstance(single.structure, CylindricalSurface):
         if isinstance(surface, CylindricalSurface):     # TODO differentiate between a sink and a cap
             return CylindricalSurfaceSinktestShell (single, surface, geometrycontainer, domains)
@@ -100,7 +100,7 @@ def create_default_interaction(domain_id, shell_id, testShell, reaction_rules, i
     elif isinstance(testShell, CylindricalSurfaceSinktestShell):
         return CylindricalSurfaceSink        (domain_id, shell_id, testShell, reaction_rules, interaction_rules)
 
-### Transitions
+### Transitions (TODO cleanup)
 def try_default_testtransition(single, surface, geometrycontainer, domains):
     if isinstance(single.structure, CuboidalRegion):        
             raise testShellError('(Transition). Combination of (3D particle, surface) is not supported')
@@ -459,6 +459,7 @@ class EGFRDSimulator(ParticleSimulatorBase):
         # Get structure (region or surface) where the particle lives.
         species = self.world.get_species(pid_particle_pair[1].sid)
         structure = self.world.get_structure(pid_particle_pair[1].structure_id)
+
 
         # 2. Create and register the single domain.
         # The type of the single that will be created 
@@ -897,8 +898,8 @@ class EGFRDSimulator(ParticleSimulatorBase):
         reactant           = single.pid_particle_pair
         reactant_radius    = reactant[1].radius
         reactant_structure = single.structure
-        species = self.world.get_species(reactant[1].sid)
-        reactant_structure_type_id = species.structure_type_id
+        species                     = self.world.get_species(reactant[1].sid)
+        reactant_structure_type_id  = species.structure_type_id
         rr = single.reactionrule
 
         # 1. remove the particle
@@ -1185,8 +1186,7 @@ class EGFRDSimulator(ParticleSimulatorBase):
         # A(structure) + surface -> 0
         # A(structure) + surface -> B(surface)
         if __debug__:
-            #assert isinstance(single, InteractionSingle)
-            assert isinstance(single, Single) # HACK
+            assert isinstance(single, InteractionSingle)
 
         # 0. get reactant info
         reactant        = single.pid_particle_pair
@@ -1224,10 +1224,9 @@ class EGFRDSimulator(ParticleSimulatorBase):
 #                   'Product particle should live on the surface of interaction after the reaction.'
 
             # 1.5 get new position of particle
-            #transposed_pos = self.world.cyclic_transpose(reactant_pos, product_surface.shape.position)
-            #product_pos, _ = product_surface.projected_point(transposed_pos)
-            #product_pos = self.world.apply_boundary(product_pos)        # not sure this is still necessary
-            product_pos = reactant_pos; # HACK
+            transposed_pos = self.world.cyclic_transpose(reactant_pos, product_surface.shape.position)
+            product_pos, _ = product_surface.projected_point(transposed_pos)
+            product_pos = self.world.apply_boundary(product_pos)        # not sure this is still necessary
 
             # 2. burst the volume that will contain the products.
             #    Note that an interaction domain is already sized such that it includes the
@@ -1450,12 +1449,11 @@ class EGFRDSimulator(ParticleSimulatorBase):
             if isinstance(obj, NonInteractionSingle):
                 # try making a Pair (can be Mixed Pair or Normal Pair)
                 domain = self.try_pair (single, obj)
-                # TODO: Include formation of "PlanarSurfaceEdgePair"
 
             elif isinstance(obj, CylindricalSurface) or isinstance(obj, PlanarSurface):
                 # try making an Interaction
                 domain = self.try_interaction (single, obj)
-                # if this fails try a Transition between two surfaces
+                # if this fails try a TransitionSingle between two surfaces
                 if not domain:
                     domain = self.try_transition (single, obj)
 
@@ -1592,8 +1590,7 @@ class EGFRDSimulator(ParticleSimulatorBase):
         self.add_domain_event(single)
         # check everything is ok
         if __debug__:
-            #assert self.check_domain(single) # HACK
-            pass
+            assert self.check_domain(single)
 
         return single
 
@@ -1649,8 +1646,7 @@ class EGFRDSimulator(ParticleSimulatorBase):
             if __debug__:
                 if single.event_type != EventType.BURST:
                     # The burst of the domain may be caused by an overlapping domain
-                    #assert self.check_domain(single) # HACK
-                    pass
+                    assert self.check_domain(single)
 
                 # check that the event time of the single (last_time + dt) is equal to the
                 # simulator time

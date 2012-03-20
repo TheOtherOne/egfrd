@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from _gfrd import (
     SphericalShell,
     CylindricalShell,
@@ -298,7 +297,7 @@ class SphericalSingle(NonInteractionSingle, hasSphericalShell):
         else:
             return self.shell_list
 
-    #def create_updated_shell(self, position):
+    def create_updated_shell(self, position):
         # TODO what should we do with the position now?
         try:
             radius = self.testShell.determine_possible_shell(self.structure.id, [self.domain_id], [])
@@ -388,12 +387,10 @@ class PlanarSurfaceSingle(NonInteractionSingle, hasCylindricalShell):
     def create_updated_shell(self, position):
         # TODO what should we do with the position now?
         try:
-
             dr, dz_right, dz_left = self.testShell.determine_possible_shell(self.structure.id, [self.domain_id], [])
             center, radius, half_length = self.r_zright_zleft_to_r_center_hl(self.testShell.get_referencepoint(),
                                                                              self.testShell.get_orientation_vector(),
                                                                              dr, dz_right, dz_left) 
-            
             return self.create_new_shell(center, radius, half_length, self.domain_id)
         except ShellmakingError as e:
             raise Exception('PlanarSurfaceSingle, create_updated_shell failed: %s' % str(e) )
